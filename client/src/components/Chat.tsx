@@ -125,16 +125,17 @@ export default function Chat() {
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <div className="chat-header-content">
-          <div className="chat-title">
-            <h2>二级市场策略分析师</h2>
-            <p>专业的债券、股票市场分析与投资建议</p>
+    <div className="w-full max-w-4xl h-[80vh] bg-white rounded-3xl card-shadow flex flex-col overflow-hidden">
+      <div className="gradient-bg text-white p-6 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+        <div className="flex justify-between items-center relative z-10">
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold mb-2">二级市场策略分析师</h2>
+            <p className="opacity-90 text-sm">专业的债券、股票市场分析与投资建议</p>
           </div>
           <button 
             onClick={clearChat}
-            className="clear-chat-btn"
+            className="bg-white/20 border-none text-white w-10 h-10 rounded-full cursor-pointer text-xl transition-all duration-300 flex items-center justify-center hover:bg-white/30 hover:scale-110"
             title="清空聊天记录"
           >
             🗑️
@@ -142,22 +143,31 @@ export default function Chat() {
         </div>
       </div>
       
-      <div className="messages-container">
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
         {messages.length === 1 && (
-          <div className="welcome-message">
-            <div className="welcome-icon">📊</div>
-            <h3>欢迎来到策略分析师</h3>
-            <p>我可以帮您分析债券市场、股票市场、宏观政策和金融监管体制相关问题。</p>
-            <div className="suggested-questions">
-              <p className="suggested-title">您可以尝试问：</p>
-              <div className="question-chips">
-                <span onClick={() => setInputValue('当前债券市场的主要投资机会是什么？')}>
+          <div className="text-center p-8 bg-gradient-to-br from-primary-50 to-secondary-50 rounded-3xl mx-4 animate-fade-in-up">
+            <div className="text-6xl mb-4 animate-bounce-slow">📊</div>
+            <h3 className="text-gray-800 text-2xl font-bold mb-4">欢迎来到策略分析师</h3>
+            <p className="text-gray-600 mb-8 leading-relaxed">我可以帮您分析债券市场、股票市场、宏观政策和金融监管体制相关问题。</p>
+            <div className="text-left">
+              <p className="text-gray-700 font-semibold mb-4 text-center">您可以尝试问：</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                <span 
+                  onClick={() => setInputValue('当前债券市场的主要投资机会是什么？')}
+                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
+                >
                   📈 债券投资机会
                 </span>
-                <span onClick={() => setInputValue('股票市场的近期走势如何分析？')}>
+                <span 
+                  onClick={() => setInputValue('股票市场的近期走势如何分析？')}
+                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
+                >
                   📉 股市走势分析
                 </span>
-                <span onClick={() => setInputValue('宏观经济政策对投资有什么影响？')}>
+                <span 
+                  onClick={() => setInputValue('宏观经济政策对投资有什么影响？')}
+                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
+                >
                   🏛️ 宏观政策影响
                 </span>
               </div>
@@ -168,16 +178,24 @@ export default function Chat() {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`message ${message.isUser ? 'user-message' : 'bot-message'}`}
+            className={`flex items-start gap-3 animate-fade-in-up ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}
           >
-            <div className="message-avatar">
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-lg flex-shrink-0 ${
+              message.isUser 
+                ? 'bg-gradient-to-br from-primary-500 to-secondary-500' 
+                : 'bg-gradient-to-br from-gray-100 to-gray-200'
+            }`}>
               {message.isUser ? '👤' : '🤖'}
             </div>
-            <div className="message-wrapper">
-              <div className="message-content">
+            <div className={`flex-1 max-w-[calc(100%-50px)] ${message.isUser ? 'text-right' : 'text-left'}`}>
+              <div className={`message-bubble ${
+                message.isUser ? 'user-message' : 'bot-message'
+              }`}>
                 {formatMessage(message.content)}
               </div>
-              <div className="message-time">
+              <div className={`text-xs text-gray-500 mt-1 px-2 ${
+                message.isUser ? 'text-right' : 'text-left'
+              }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
@@ -185,16 +203,18 @@ export default function Chat() {
         ))}
         
         {isTyping && (
-          <div className="message bot-message">
-            <div className="message-avatar">🤖</div>
-            <div className="message-wrapper">
-              <div className="message-content">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+          <div className="flex items-start gap-3 animate-fade-in-up">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-lg flex-shrink-0">
+              🤖
+            </div>
+            <div className="flex-1 max-w-[calc(100%-50px)]">
+              <div className="message-bubble bot-message">
+                <div className="flex gap-1 mb-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-typing"></span>
+                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-typing" style={{animationDelay: '0.2s'}}></span>
+                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-typing" style={{animationDelay: '0.4s'}}></span>
                 </div>
-                <span className="typing-text">正在思考中...</span>
+                <span className="text-gray-500 text-sm italic">正在思考中...</span>
               </div>
             </div>
           </div>
@@ -203,7 +223,7 @@ export default function Chat() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="input-container">
+      <div className="p-6 bg-gray-50 border-t border-gray-200 flex gap-4 items-end relative">
         <textarea
           ref={textareaRef}
           value={inputValue}
@@ -212,11 +232,12 @@ export default function Chat() {
           placeholder="请输入您的问题..."
           disabled={isLoading}
           rows={1}
+          className="input-field min-h-[50px] max-h-[120px]"
         />
         <button
           onClick={sendMessage}
           disabled={!inputValue.trim() || isLoading}
-          className="send-button"
+          className="btn-primary min-w-[80px]"
         >
           {isLoading ? '发送中...' : '发送'}
         </button>

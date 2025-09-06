@@ -76,6 +76,10 @@ server/models/
 # Private data
 server/private_data/
 
+
+# Node modules
+server/node_modules/
+
 # Package lock files (can be regenerated)
 package-lock.json
 client/package-lock.json
