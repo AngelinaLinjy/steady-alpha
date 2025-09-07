@@ -18,10 +18,11 @@ export default function Logo({ width = 600, height = 160, className = '' }: Logo
         y="50%"
         textAnchor="middle"
         dominantBaseline="middle"
-        fontFamily="Cinzel, Trajan Pro, Times New Roman, serif"
+        // fontFamily="Cinzel, Trajan Pro, Times New Roman, serif"
+        fontFamily="sans-serif"
         fontWeight="600"
         fontSize="80"
-        fill="#ffbf00"
+        fill="#d7303b"
         letterSpacing="3"
       >
         Steady Alpha

@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
+import { Card, Typography, Button, List, Avatar, Input, Space, Spin } from 'antd';
 import {
-  TrashIcon,
-  ChartBarIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  BuildingLibraryIcon,
-  UserIcon,
-  CpuChipIcon,
-} from '@heroicons/react/24/outline';
+  DeleteOutlined,
+  BarChartOutlined,
+  RiseOutlined,
+  FallOutlined,
+  BankOutlined,
+  UserOutlined,
+  RobotOutlined,
+  SendOutlined,
+} from '@ant-design/icons';
 
 interface Message {
   id: string;
@@ -30,7 +33,6 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -39,14 +41,6 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    // Auto-resize textarea
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px';
-    }
-  }, [inputValue]);
 
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -69,7 +63,7 @@ export default function Chat() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question: inputValue }),
+        body: JSON.stringify({ question: userMessage.content }),
       });
 
       if (!response.ok) {
@@ -78,7 +72,6 @@ export default function Chat() {
 
       const data = await response.json();
 
-      // Simulate typing delay for better UX
       setTimeout(() => {
         const botMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -90,7 +83,7 @@ export default function Chat() {
         setMessages(prev => [...prev, botMessage]);
         setIsLoading(false);
         setIsTyping(false);
-      }, 1000);
+      }, 800);
     } catch (error) {
       setTimeout(() => {
         const errorMessage: Message = {
@@ -102,12 +95,13 @@ export default function Chat() {
         setMessages(prev => [...prev, errorMessage]);
         setIsLoading(false);
         setIsTyping(false);
-      }, 1000);
+        console.log('error', error);
+      }, 600);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handlePressEnter = (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
+    if (!e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -126,154 +120,153 @@ export default function Chat() {
   };
 
   const formatMessage = (content: string) => {
-    // Simple formatting for better readability
     return content.split('\n').map((paragraph, index) => (
-      <p key={index} className="message-paragraph">
+      <Typography.Paragraph key={index} style={{ marginBottom: 8 }}>
         {paragraph}
-      </p>
+      </Typography.Paragraph>
     ));
   };
 
   return (
-    <div className="w-full max-w-4xl h-[80vh] bg-white rounded-3xl card-shadow flex flex-col overflow-hidden">
-      <div className="gradient-bg text-black p-6 text-center relative overflow-hidden">
-        <div className="flex justify-between items-center relative z-10">
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold mb-2">二级市场策略分析师</h2>
-            <p className="opacity-90 text-sm">专业的债券、股票市场分析与投资建议</p>
-          </div>
-          <button
-            onClick={clearChat}
-            className="bg-white/20 border-none text-black w-10 h-10 rounded-full cursor-pointer text-xl transition-all duration-300 flex items-center justify-center hover:bg-white/30 hover:scale-110"
-            title="清空聊天记录"
-          >
-            <TrashIcon className="w-5 h-5" />
-          </button>
+    <Card
+      style={{ width: '100%', height: '78vh', display: 'flex', flexDirection: 'column' }}
+      bodyStyle={{
+        padding: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        overflow: 'hidden',
+      }}
+      title={
+        <div>
+          <Typography.Title level={4} style={{ marginBottom: 0 }}>
+            二级市场策略分析师
+          </Typography.Title>
+          <Typography.Text type="secondary">专业的债券、股票市场分析与投资建议</Typography.Text>
         </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+      }
+      extra={
+        <Button
+          type="text"
+          aria-label="清空聊天记录"
+          onClick={clearChat}
+          icon={<DeleteOutlined />}
+        />
+      }
+    >
+      <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
         {messages.length === 1 && (
-          <div className="text-center p-8 bg-gradient-to-br from-primary-50 to-secondary-50 rounded-3xl mx-4 animate-fade-in-up">
-            <div className="mb-4 animate-bounce-slow flex justify-center">
-              <ChartBarIcon className="w-16 h-16" />
-            </div>
-            <h3 className="text-gray-800 text-2xl font-bold mb-4">欢迎来到策略分析师</h3>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              我可以帮您分析债券市场、股票市场、宏观政策和金融监管体制相关问题。
-            </p>
-            <div className="text-left">
-              <p className="text-gray-700 font-semibold mb-4 text-center">您可以尝试问：</p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                <span
-                  onClick={() => setInputValue('当前债券市场的主要投资机会是什么？')}
-                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-black hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] inline-flex items-center"
-                >
-                  <ArrowTrendingUpIcon className="w-4 h-4 inline-block mr-1 align-[-2px]" />{' '}
-                  债券投资机会
-                </span>
-                <span
-                  onClick={() => setInputValue('股票市场的近期走势如何分析？')}
-                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-black hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] inline-flex items-center"
-                >
-                  <ArrowTrendingDownIcon className="w-4 h-4 inline-block mr-1 align-[-2px]" />{' '}
-                  股市走势分析
-                </span>
-                <span
-                  onClick={() => setInputValue('宏观经济政策对投资有什么影响？')}
-                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-black hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] inline-flex items-center"
-                >
-                  <BuildingLibraryIcon className="w-4 h-4 inline-block mr-1 align-[-2px]" />{' '}
-                  宏观政策影响
-                </span>
+          <Card style={{ textAlign: 'center', marginBottom: 16 }}>
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+              <BarChartOutlined style={{ fontSize: 28 }} />
+              <Typography.Title level={4} style={{ margin: 0 }}>
+                欢迎来到策略分析师
+              </Typography.Title>
+              <Typography.Paragraph type="secondary" style={{ margin: 0 }}>
+                我可以帮您分析债券市场、股票市场、宏观政策和金融监管体制相关问题。
+              </Typography.Paragraph>
+              <div>
+                <Typography.Text strong>您可以尝试问：</Typography.Text>
+                <div style={{ marginTop: 8 }}>
+                  <Space wrap>
+                    <Button
+                      size="small"
+                      onClick={() => setInputValue('当前债券市场的主要投资机会是什么？')}
+                      icon={<RiseOutlined />}
+                    >
+                      债券投资机会
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => setInputValue('股票市场的近期走势如何分析？')}
+                      icon={<FallOutlined />}
+                    >
+                      股市走势分析
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => setInputValue('宏观经济政策对投资有什么影响？')}
+                      icon={<BankOutlined />}
+                    >
+                      宏观政策影响
+                    </Button>
+                  </Space>
+                </div>
               </div>
-            </div>
-          </div>
+            </Space>
+          </Card>
         )}
 
-        {messages.map(message => (
-          <div
-            key={message.id}
-            className={`flex items-start gap-3 animate-fade-in-up ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}
-          >
-            <div
-              className={`w-9 h-9 rounded-full flex items-center justify-center text-lg flex-shrink-0 ${
-                message.isUser
-                  ? 'bg-gradient-to-br from-primary-500 to-secondary-500'
-                  : 'bg-gradient-to-br from-gray-100 to-gray-200'
-              }`}
-            >
-              {message.isUser ? (
-                <UserIcon className="w-5 h-5" />
-              ) : (
-                <CpuChipIcon className="w-5 h-5" />
-              )}
-            </div>
-            <div
-              className={`flex-1 max-w-[calc(100%-50px)] ${message.isUser ? 'text-right' : 'text-left'}`}
-            >
-              <div
-                className={`message-bubble ${message.isUser ? 'user-message' : 'bot-message'} shadow-sm transition-shadow hover:shadow-md`}
+        <List
+          dataSource={messages}
+          renderItem={message => (
+            <List.Item style={{ borderBlockEnd: 'none', padding: '8px 0' }}>
+              <Space
+                align="start"
+                style={{
+                  width: '100%',
+                  justifyContent: message.isUser ? 'flex-end' : 'flex-start',
+                }}
               >
-                {formatMessage(message.content)}
-              </div>
-              <div
-                className={`text-xs text-gray-500 mt-1 px-2 ${
-                  message.isUser ? 'text-right' : 'text-left'
-                }`}
-              >
-                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
-            </div>
-          </div>
-        ))}
+                {!message.isUser && <Avatar icon={<RobotOutlined />} />}
+                <Card
+                  size="small"
+                  style={{ maxWidth: '80%', background: message.isUser ? '#e6f4ff' : '#fafafa' }}
+                  bodyStyle={{ padding: 12 }}
+                >
+                  {formatMessage(message.content)}
+                  <div style={{ textAlign: message.isUser ? 'right' : 'left' }}>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </Typography.Text>
+                  </div>
+                </Card>
+                {message.isUser && (
+                  <Avatar style={{ backgroundColor: '#1677ff' }} icon={<UserOutlined />} />
+                )}
+              </Space>
+            </List.Item>
+          )}
+        />
 
         {isTyping && (
-          <div className="flex items-start gap-3 animate-fade-in-up">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-lg flex-shrink-0">
-              <CpuChipIcon className="w-5 h-5" />
-            </div>
-            <div className="flex-1 max-w-[calc(100%-50px)]">
-              <div className="message-bubble bot-message">
-                <div className="flex gap-1 mb-2">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full animate-typing"></span>
-                  <span
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-typing"
-                    style={{ animationDelay: '0.2s' }}
-                  ></span>
-                  <span
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-typing"
-                    style={{ animationDelay: '0.4s' }}
-                  ></span>
-                </div>
-                <span className="text-gray-500 text-sm italic">正在思考中...</span>
-              </div>
-            </div>
+          <div style={{ padding: '8px 0' }}>
+            <Space align="center">
+              <Avatar icon={<RobotOutlined />} />
+              <Space>
+                <Spin size="small" />
+                <Typography.Text type="secondary">正在思考中...</Typography.Text>
+              </Space>
+            </Space>
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-6 bg-gray-50 border-t border-gray-200 flex gap-4 items-end relative">
-        <textarea
-          ref={textareaRef}
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="请输入您的问题..."
-          disabled={isLoading}
-          rows={1}
-          className="input-field min-h-[50px] max-h-[120px] focus:ring-2 focus:ring-primary-300/70"
-        />
-        <button
-          onClick={sendMessage}
-          disabled={!inputValue.trim() || isLoading}
-          className="btn-primary min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? '发送中...' : '发送'}
-        </button>
+      <div style={{ padding: 16, borderTop: '1px solid #f0f0f0' }}>
+        <Space.Compact style={{ width: '100%' }}>
+          <Input.TextArea
+            value={inputValue}
+            onChange={e => setInputValue(e.target.value)}
+            onPressEnter={handlePressEnter}
+            placeholder="请输入您的问题..."
+            disabled={isLoading}
+            autoSize={{ minRows: 1, maxRows: 4 }}
+          />
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            onClick={sendMessage}
+            disabled={!inputValue.trim() || isLoading}
+          >
+            {isLoading ? '发送中' : '发送'}
+          </Button>
+        </Space.Compact>
       </div>
-    </div>
+    </Card>
   );
 }

@@ -1,73 +1,45 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
-import Logo from './Logo';
+import { ChatBubbleLeftRightIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { Layout, Menu } from 'antd';
 
 export default function Header() {
   const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const selectedKey = location.pathname === '/about' ? 'about' : 'ask';
 
   return (
-    <nav className="gradient-bg px-8 py-4 shadow-lg sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto flex justify-between items-center text-white">
-        <div
-          className={`flex gap-8 items-center transition-all duration-300 ${
-            isMenuOpen
-              ? 'fixed top-16 left-0 right-0 gradient-bg flex-col p-8 gap-4 shadow-lg opacity-100 visible translate-y-0'
-              : 'hidden md:flex'
-          }`}
-        >
-          <Logo width={200} height={53} />
-
-          <Link
-            to="/"
-            className={`font-medium px-4 py-2 rounded-full transition-all duration-300 relative overflow-hidden ${
-              location.pathname === '/'
-                ? 'bg-white/20 shadow-lg'
-                : 'hover:bg-white/10 hover:-translate-y-0.5'
-            }`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Search
-          </Link>
-          <Link
-            to="/about"
-            className={`font-medium px-4 py-2 rounded-full transition-all duration-300 relative overflow-hidden ${
-              location.pathname === '/about'
-                ? 'bg-white/20 shadow-lg'
-                : 'hover:bg-white/10 hover:-translate-y-0.5'
-            }`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            About
-          </Link>
+    <Layout.Sider width={80} theme="dark" style={{ background: 'transparent' }}>
+      <div className="flex flex-col h-full items-center text-white">
+        <Menu
+          mode="inline"
+          selectedKeys={[selectedKey]}
+          theme="dark"
+          inlineCollapsed
+          items={[
+            {
+              key: 'ask',
+              icon: <ChatBubbleLeftRightIcon className="h-6 w-6" />,
+              label: (
+                <Link to="/" aria-label="Ask" title="Ask">
+                  Ask
+                </Link>
+              ),
+            },
+            {
+              key: 'about',
+              icon: <InformationCircleIcon />,
+              label: (
+                <Link to="/about" aria-label="About" title="About">
+                  About
+                </Link>
+              ),
+            },
+          ]}
+          className="mt-4 flex-1 w-full"
+        />
+        <div className="pt-2 text-[10px] text-white/70">
+          <p className="m-0">© 2025</p>
         </div>
-
-        <button
-          className="md:hidden flex flex-col bg-transparent border-none cursor-pointer p-2"
-          onClick={toggleMenu}
-          aria-label="切换菜单"
-        >
-          <span
-            className={`w-6 h-0.5 bg-white mb-1.5 rounded transition-all duration-300 ${
-              isMenuOpen ? 'rotate-45 translate-y-2' : ''
-            }`}
-          ></span>
-          <span
-            className={`w-6 h-0.5 bg-white mb-1.5 rounded transition-all duration-300 ${
-              isMenuOpen ? 'opacity-0' : ''
-            }`}
-          ></span>
-          <span
-            className={`w-6 h-0.5 bg-white rounded transition-all duration-300 ${
-              isMenuOpen ? '-rotate-45 -translate-y-2' : ''
-            }`}
-          ></span>
-        </button>
       </div>
-    </nav>
+    </Layout.Sider>
   );
 }
