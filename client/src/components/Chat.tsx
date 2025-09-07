@@ -1,4 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
+import {
+  TrashIcon,
+  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  BuildingLibraryIcon,
+  UserIcon,
+  CpuChipIcon,
+} from '@heroicons/react/24/outline';
 
 interface Message {
   id: string;
@@ -127,8 +136,7 @@ export default function Chat() {
 
   return (
     <div className="w-full max-w-4xl h-[80vh] bg-white rounded-3xl card-shadow flex flex-col overflow-hidden">
-      <div className="gradient-bg text-white p-6 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+      <div className="gradient-bg text-black p-6 text-center relative overflow-hidden">
         <div className="flex justify-between items-center relative z-10">
           <div className="flex-1">
             <h2 className="text-2xl font-bold mb-2">二级市场策略分析师</h2>
@@ -136,10 +144,10 @@ export default function Chat() {
           </div>
           <button
             onClick={clearChat}
-            className="bg-white/20 border-none text-white w-10 h-10 rounded-full cursor-pointer text-xl transition-all duration-300 flex items-center justify-center hover:bg-white/30 hover:scale-110"
+            className="bg-white/20 border-none text-black w-10 h-10 rounded-full cursor-pointer text-xl transition-all duration-300 flex items-center justify-center hover:bg-white/30 hover:scale-110"
             title="清空聊天记录"
           >
-            🗑️
+            <TrashIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -147,7 +155,9 @@ export default function Chat() {
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
         {messages.length === 1 && (
           <div className="text-center p-8 bg-gradient-to-br from-primary-50 to-secondary-50 rounded-3xl mx-4 animate-fade-in-up">
-            <div className="text-6xl mb-4 animate-bounce-slow">📊</div>
+            <div className="mb-4 animate-bounce-slow flex justify-center">
+              <ChartBarIcon className="w-16 h-16" />
+            </div>
             <h3 className="text-gray-800 text-2xl font-bold mb-4">欢迎来到策略分析师</h3>
             <p className="text-gray-600 mb-8 leading-relaxed">
               我可以帮您分析债券市场、股票市场、宏观政策和金融监管体制相关问题。
@@ -157,21 +167,24 @@ export default function Chat() {
               <div className="flex flex-wrap gap-2 justify-center">
                 <span
                   onClick={() => setInputValue('当前债券市场的主要投资机会是什么？')}
-                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
+                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-black hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] inline-flex items-center"
                 >
-                  📈 债券投资机会
+                  <ArrowTrendingUpIcon className="w-4 h-4 inline-block mr-1 align-[-2px]" />{' '}
+                  债券投资机会
                 </span>
                 <span
                   onClick={() => setInputValue('股票市场的近期走势如何分析？')}
-                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
+                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-black hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] inline-flex items-center"
                 >
-                  📉 股市走势分析
+                  <ArrowTrendingDownIcon className="w-4 h-4 inline-block mr-1 align-[-2px]" />{' '}
+                  股市走势分析
                 </span>
                 <span
                   onClick={() => setInputValue('宏观经济政策对投资有什么影响？')}
-                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-white hover:-translate-y-0.5 hover:shadow-lg"
+                  className="bg-white text-primary-500 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 border-2 border-primary-100 text-sm whitespace-nowrap hover:bg-primary-500 hover:text-black hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98] inline-flex items-center"
                 >
-                  🏛️ 宏观政策影响
+                  <BuildingLibraryIcon className="w-4 h-4 inline-block mr-1 align-[-2px]" />{' '}
+                  宏观政策影响
                 </span>
               </div>
             </div>
@@ -190,12 +203,18 @@ export default function Chat() {
                   : 'bg-gradient-to-br from-gray-100 to-gray-200'
               }`}
             >
-              {message.isUser ? '👤' : '🤖'}
+              {message.isUser ? (
+                <UserIcon className="w-5 h-5" />
+              ) : (
+                <CpuChipIcon className="w-5 h-5" />
+              )}
             </div>
             <div
               className={`flex-1 max-w-[calc(100%-50px)] ${message.isUser ? 'text-right' : 'text-left'}`}
             >
-              <div className={`message-bubble ${message.isUser ? 'user-message' : 'bot-message'}`}>
+              <div
+                className={`message-bubble ${message.isUser ? 'user-message' : 'bot-message'} shadow-sm transition-shadow hover:shadow-md`}
+              >
                 {formatMessage(message.content)}
               </div>
               <div
@@ -212,7 +231,7 @@ export default function Chat() {
         {isTyping && (
           <div className="flex items-start gap-3 animate-fade-in-up">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-lg flex-shrink-0">
-              🤖
+              <CpuChipIcon className="w-5 h-5" />
             </div>
             <div className="flex-1 max-w-[calc(100%-50px)]">
               <div className="message-bubble bot-message">
@@ -245,12 +264,12 @@ export default function Chat() {
           placeholder="请输入您的问题..."
           disabled={isLoading}
           rows={1}
-          className="input-field min-h-[50px] max-h-[120px]"
+          className="input-field min-h-[50px] max-h-[120px] focus:ring-2 focus:ring-primary-300/70"
         />
         <button
           onClick={sendMessage}
           disabled={!inputValue.trim() || isLoading}
-          className="btn-primary min-w-[80px]"
+          className="btn-primary min-w-[80px] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? '发送中...' : '发送'}
         </button>

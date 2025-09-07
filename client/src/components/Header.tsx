@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <nav className="gradient-bg px-8 py-4 shadow-lg sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
+      <div className="max-w-6xl mx-auto flex justify-between items-center text-white">
         <div
           className={`flex gap-8 items-center transition-all duration-300 ${
             isMenuOpen

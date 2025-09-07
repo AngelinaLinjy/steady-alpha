@@ -2,6 +2,8 @@
 
 /* Simple dark financial theme - only background changes */
 body.dark-theme {
-  background: #222222; /* deep navy */
+  /* background: #2e1f00; */
+  /* background: #262626 */
+  background: #1d6295; /* deep navy */
   min-height: 100vh;
 }
