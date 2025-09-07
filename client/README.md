@@ -1,85 +1,88 @@
-# 二级市场策略分析师 - 前端应用
+# Secondary Market Strategy Analyst - Frontend Application
 
-这是一个基于React + TypeScript + Vite构建的现代化聊天界面，用于与AI二级市场策略分析师进行交互。
+This is a modern chat interface built with React + TypeScript + Vite for interacting with an AI secondary market strategy analyst.
 
-## 功能特性
+## Features
 
-- 🤖 **智能聊天界面**: 现代化的聊天UI，支持实时消息显示
-- 💬 **实时通信**: 与后端AI服务实时交互
-- 📱 **响应式设计**: 支持桌面和移动设备
-- ⚡ **快速响应**: 基于Vite的快速开发体验
-- 🎨 **美观界面**: 渐变色彩和流畅动画效果
+- 🤖 **Intelligent Chat Interface**: Modern chat UI with real-time message display
+- 💬 **Real-time Communication**: Real-time interaction with backend AI services
+- 📱 **Responsive Design**: Support for desktop and mobile devices
+- ⚡ **Fast Response**: Fast development experience based on Vite
+- 🎨 **Beautiful Interface**: Gradient colors and smooth animation effects
 
-## 技术栈
+## Tech Stack
 
-- **前端框架**: React 19.1.1
-- **开发语言**: TypeScript
-- **构建工具**: Vite 7.1.2
-- **路由**: React Router DOM 7.8.2
-- **样式**: CSS3 (原生样式，无额外依赖)
+- **Frontend Framework**: React 19.1.1
+- **Development Language**: TypeScript
+- **Build Tool**: Vite 7.1.2
+- **Routing**: React Router DOM 7.8.2
+- **Styling**: CSS3 (Native styles, no additional dependencies)
 
-## 快速开始
+## Quick Start
 
-### 安装依赖
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 启动开发服务器
+### Start Development Server
 
 ```bash
 npm run dev
 ```
 
-应用将在 `http://localhost:5173` 启动
+The application will start at `http://localhost:5173`
 
-### 构建生产版本
+### Build Production Version
 
 ```bash
 npm run build
 ```
 
-### 预览生产版本
+### Preview Production Version
 
 ```bash
 npm run preview
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 src/
-├── components/          # 组件目录
-│   ├── Chat.tsx        # 聊天界面组件
-│   ├── Header.tsx      # 导航头部组件
-│   └── About.tsx       # 关于页面组件
-├── pages/              # 页面目录
-│   └── Home.tsx        # 首页组件
-├── App.tsx             # 主应用组件
-├── App.css             # 全局样式
-├── main.tsx            # 应用入口
-└── vite-env.d.ts       # Vite类型定义
+├── components/          # Component directory
+│   ├── Chat.tsx        # Chat interface component
+│   ├── Header.tsx      # Navigation header component
+│   └── About.tsx       # About page component
+├── pages/              # Page directory
+│   └── Home.tsx        # Home page component
+├── App.tsx             # Main application component
+├── App.css             # Global styles
+├── main.tsx            # Application entry point
+└── vite-env.d.ts       # Vite type definitions
 ```
 
-## 主要组件说明
+## Main Component Description
 
 ### Chat.tsx
-- 聊天界面的核心组件
-- 处理消息发送和接收
-- 管理聊天状态和UI交互
-- 支持打字指示器和错误处理
+
+- Core component of the chat interface
+- Handles message sending and receiving
+- Manages chat state and UI interaction
+- Supports typing indicator and error handling
 
 ### Header.tsx
-- 应用导航栏
-- 提供页面间导航功能
+
+- Application navigation bar
+- Provides navigation between pages
 
 ### About.tsx
-- 关于页面，介绍应用功能和技术栈
 
-## API集成
+- About page, introducing application features and tech stack
 
-应用通过HTTP POST请求与后端服务通信：
+## API Integration
+
+The application communicates with the backend service through HTTP POST requests:
 
 ```typescript
 const response = await fetch('http://localhost:3000/ask', {
@@ -91,27 +94,27 @@ const response = await fetch('http://localhost:3000/ask', {
 });
 ```
 
-## 样式特性
+## Style Features
 
-- **现代化设计**: 使用渐变背景和圆角设计
-- **响应式布局**: 适配不同屏幕尺寸
-- **流畅动画**: 消息淡入效果和打字指示器
-- **用户友好**: 清晰的视觉层次和交互反馈
+- **Modern Design**: Uses gradient backgrounds and rounded corner design
+- **Responsive Layout**: Adapts to different screen sizes
+- **Smooth Animation**: Message fade-in effects and typing indicators
+- **User-friendly**: Clear visual hierarchy and interaction feedback
 
-## 开发说明
+## Development Notes
 
-1. 确保后端服务运行在 `http://localhost:3000`
-2. 前端开发服务器运行在 `http://localhost:5173`
-3. 支持热重载，修改代码后自动刷新
-4. 使用TypeScript提供类型安全
+1. Ensure the backend service is running at `http://localhost:3000`
+2. The frontend development server runs at `http://localhost:5173`
+3. Supports hot reload, automatically refreshing after code modifications
+4. Uses TypeScript to provide type safety
 
-## 浏览器支持
+## Browser Support
 
-- Chrome (推荐)
+- Chrome (recommended)
 - Firefox
 - Safari
 - Edge
 
-## 许可证
+## License
 
 MIT License

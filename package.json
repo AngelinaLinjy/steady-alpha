@@ -1,0 +1,25 @@
+{
+  "name": "steady-alpha",
+  "version": "1.0.0",
+  "description": "Steady Alpha Project",
+  "private": true,
+  "scripts": {
+    "format": "npm run format:client && npm run format:server",
+    "format:write": "npm run format:write:client && npm run format:write:server",
+    "format:client": "cd client && npm run format",
+    "format:server": "cd server && npm run format",
+    "format:write:client": "cd client && npm run format:write",
+    "format:write:server": "cd server && npm run format:write",
+    "tsc": "cd client && npm run tsc",
+    "tsc:watch": "cd client && npm run tsc:watch",
+    "type-check": "cd client && npm run type-check",
+    "lint": "cd client && npm run lint",
+    "lint:fix": "cd client && npm run lint:fix",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
