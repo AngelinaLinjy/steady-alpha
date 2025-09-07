@@ -1,1 +1,7 @@
 @import 'tailwindcss';
+
+/* Simple dark financial theme - only background changes */
+body.dark-theme {
+  background: #222222; /* deep navy */
+  min-height: 100vh;
+}

@@ -20,8 +20,8 @@ export default function Logo({ width = 600, height = 160, className = '' }: Logo
         dominantBaseline="middle"
         fontFamily="Cinzel, Trajan Pro, Times New Roman, serif"
         fontWeight="600"
-        fontSize="70"
-        fill="#C9A74D"
+        fontSize="80"
+        fill="#ffbf00"
         letterSpacing="3"
       >
         Steady Alpha
