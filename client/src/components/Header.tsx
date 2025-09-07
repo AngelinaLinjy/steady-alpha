@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import Logo from './Logo';
 
 export default function Header() {
   const location = useLocation();
@@ -12,18 +13,6 @@ export default function Header() {
   return (
     <nav className="gradient-bg px-8 py-4 shadow-lg sticky top-0 z-50">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <div className="flex items-center">
-          <Link
-            to="/"
-            className="flex items-center text-white font-semibold text-xl transition-transform duration-300 hover:scale-105"
-          >
-            <span className="text-2xl mr-2">📈</span>
-            <span className="gradient-text bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-              策略分析师
-            </span>
-          </Link>
-        </div>
-
         <div
           className={`flex gap-8 items-center transition-all duration-300 ${
             isMenuOpen
@@ -31,27 +20,29 @@ export default function Header() {
               : 'hidden md:flex'
           }`}
         >
+          <Logo width={200} height={53} />
+
           <Link
             to="/"
-            className={`text-white font-medium px-4 py-2 rounded-full transition-all duration-300 relative overflow-hidden ${
+            className={`font-medium px-4 py-2 rounded-full transition-all duration-300 relative overflow-hidden ${
               location.pathname === '/'
                 ? 'bg-white/20 shadow-lg'
                 : 'hover:bg-white/10 hover:-translate-y-0.5'
             }`}
             onClick={() => setIsMenuOpen(false)}
           >
-            💬 聊天助手
+            Search
           </Link>
           <Link
             to="/about"
-            className={`text-white font-medium px-4 py-2 rounded-full transition-all duration-300 relative overflow-hidden ${
+            className={`font-medium px-4 py-2 rounded-full transition-all duration-300 relative overflow-hidden ${
               location.pathname === '/about'
                 ? 'bg-white/20 shadow-lg'
                 : 'hover:bg-white/10 hover:-translate-y-0.5'
             }`}
             onClick={() => setIsMenuOpen(false)}
           >
-            ℹ️ 关于我们
+            About
           </Link>
         </div>
 
