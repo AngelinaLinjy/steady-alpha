@@ -32,7 +32,9 @@ export default function Chat() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [ws, setWs] = useState<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const currentBotMessageIdRef = useRef<string | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,8 +44,90 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  const sendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+  useEffect(() => {
+    const websocket = new WebSocket('ws://localhost:3000/ws');
+
+    websocket.onopen = () => {
+      console.log('WebSocket 连接已建立');
+      setWs(websocket);
+    };
+
+    websocket.onmessage = event => {
+      try {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+          case 'connected':
+            console.log('WebSocket 连接确认');
+            break;
+
+          case 'start':
+            setIsTyping(true);
+            const botMessageId = Date.now().toString();
+            currentBotMessageIdRef.current = botMessageId;
+            setMessages(prev => [
+              ...prev,
+              {
+                id: botMessageId,
+                content: '',
+                isUser: false,
+                timestamp: new Date(),
+              },
+            ]);
+            break;
+
+          case 'chunk':
+            setMessages(prev =>
+              prev.map(msg =>
+                msg.id === currentBotMessageIdRef.current
+                  ? { ...msg, content: msg.content + data.content }
+                  : msg
+              )
+            );
+            break;
+
+          case 'done':
+            setIsLoading(false);
+            setIsTyping(false);
+            currentBotMessageIdRef.current = null;
+            break;
+
+          case 'error':
+            setIsLoading(false);
+            setIsTyping(false);
+            currentBotMessageIdRef.current = null;
+            setMessages(prev => [
+              ...prev,
+              {
+                id: Date.now().toString(),
+                content: `错误: ${data.message}`,
+                isUser: false,
+                timestamp: new Date(),
+              },
+            ]);
+            break;
+        }
+      } catch (error) {
+        console.error('解析 WebSocket 消息失败:', error);
+      }
+    };
+
+    websocket.onclose = () => {
+      console.log('WebSocket 连接已关闭');
+      setWs(null);
+    };
+
+    websocket.onerror = error => {
+      console.error('WebSocket 错误:', error);
+    };
+
+    return () => {
+      websocket.close();
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (!inputValue.trim() || isLoading || !ws || ws.readyState !== WebSocket.OPEN) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -55,49 +139,13 @@ export default function Chat() {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
-    setIsTyping(true);
 
-    try {
-      const response = await fetch('http://localhost:3000/ask', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ question: userMessage.content }),
-      });
-
-      if (!response.ok) {
-        throw new Error('网络请求失败');
-      }
-
-      const data = await response.json();
-
-      setTimeout(() => {
-        const botMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: data.answer,
-          isUser: false,
-          timestamp: new Date(),
-        };
-
-        setMessages(prev => [...prev, botMessage]);
-        setIsLoading(false);
-        setIsTyping(false);
-      }, 800);
-    } catch (error) {
-      setTimeout(() => {
-        const errorMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: '抱歉，发生了错误。请检查网络连接或稍后重试。',
-          isUser: false,
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, errorMessage]);
-        setIsLoading(false);
-        setIsTyping(false);
-        console.log('error', error);
-      }, 600);
-    }
+    ws.send(
+      JSON.stringify({
+        type: 'ask',
+        question: userMessage.content,
+      })
+    );
   };
 
   const handlePressEnter = (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {

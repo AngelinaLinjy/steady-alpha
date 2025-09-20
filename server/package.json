@@ -30,7 +30,8 @@
     "global-agent": "^3.0.0",
     "https-proxy-agent": "^7.0.6",
     "langchain": "^0.3.31",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@types/prettier": "^2.7.3",

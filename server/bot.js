@@ -3,7 +3,6 @@ import { FaissStore } from '@langchain/community/vectorstores/faiss';
 import { HuggingFaceTransformersEmbeddings } from '@langchain/community/embeddings/huggingface_transformers';
 import { MultiQueryRetriever } from 'langchain/retrievers/multi_query';
 import { ChatOllama } from '@langchain/ollama';
-import readline from 'readline';
 import path from 'path';
 import { env as HFEnv } from '@huggingface/transformers';
 import { bootstrap } from 'global-agent';
@@ -46,9 +45,10 @@ async function askQuestion(question) {
     model: 'llama3.2',
     baseUrl: 'http://localhost:11434',
     temperature: 0.2,
+    streaming: true,
   });
 
-  // 5. Build new RAG chain
+  // 5. Build new retriver
   const retriever = MultiQueryRetriever.fromLLM({
     llm: llm,
     retriever: vectorStore.asRetriever(3),
@@ -56,6 +56,7 @@ async function askQuestion(question) {
     verbose: true,
   });
 
+  // 5. Build new RAG chain
   const contextRetriverChain = RunnableSequence.from([
     input => input.question,
     retriever,
@@ -72,9 +73,8 @@ async function askQuestion(question) {
     new StringOutputParser(),
   ]);
 
-  const response = await ragChain.invoke({ question: question });
-
-  return response;
+  const stream = await ragChain.stream({ question: question });
+  return stream;
 }
 
 export { askQuestion };
