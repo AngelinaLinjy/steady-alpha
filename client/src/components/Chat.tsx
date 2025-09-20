@@ -11,6 +11,7 @@ import {
   RobotOutlined,
   SendOutlined,
 } from '@ant-design/icons';
+import { useWebSocket, type WebSocketMessage } from '../hooks/useWebSocket';
 
 interface Message {
   id: string;
@@ -30,9 +31,6 @@ export default function Chat() {
     },
   ]);
   const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [ws, setWs] = useState<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const currentBotMessageIdRef = useRef<string | null>(null);
 
@@ -44,90 +42,60 @@ export default function Chat() {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    const websocket = new WebSocket('ws://localhost:3000/ws');
+  const handleWebSocketMessage = (data: WebSocketMessage) => {
+    switch (data.type) {
+      case 'start':
+        const botMessageId = Date.now().toString();
+        currentBotMessageIdRef.current = botMessageId;
+        setMessages(prev => [
+          ...prev,
+          {
+            id: botMessageId,
+            content: '',
+            isUser: false,
+            timestamp: new Date(),
+          },
+        ]);
+        break;
 
-    websocket.onopen = () => {
-      console.log('WebSocket 连接已建立');
-      setWs(websocket);
-    };
-
-    websocket.onmessage = event => {
-      try {
-        const data = JSON.parse(event.data);
-
-        switch (data.type) {
-          case 'connected':
-            console.log('WebSocket 连接确认');
-            break;
-
-          case 'start':
-            setIsTyping(true);
-            const botMessageId = Date.now().toString();
-            currentBotMessageIdRef.current = botMessageId;
-            setMessages(prev => [
-              ...prev,
-              {
-                id: botMessageId,
-                content: '',
-                isUser: false,
-                timestamp: new Date(),
-              },
-            ]);
-            break;
-
-          case 'chunk':
-            setMessages(prev =>
-              prev.map(msg =>
-                msg.id === currentBotMessageIdRef.current
-                  ? { ...msg, content: msg.content + data.content }
-                  : msg
-              )
-            );
-            break;
-
-          case 'done':
-            setIsLoading(false);
-            setIsTyping(false);
-            currentBotMessageIdRef.current = null;
-            break;
-
-          case 'error':
-            setIsLoading(false);
-            setIsTyping(false);
-            currentBotMessageIdRef.current = null;
-            setMessages(prev => [
-              ...prev,
-              {
-                id: Date.now().toString(),
-                content: `错误: ${data.message}`,
-                isUser: false,
-                timestamp: new Date(),
-              },
-            ]);
-            break;
+      case 'chunk':
+        if (data.content) {
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === currentBotMessageIdRef.current
+                ? { ...msg, content: msg.content + data.content }
+                : msg
+            )
+          );
         }
-      } catch (error) {
-        console.error('解析 WebSocket 消息失败:', error);
-      }
-    };
+        break;
 
-    websocket.onclose = () => {
-      console.log('WebSocket 连接已关闭');
-      setWs(null);
-    };
+      case 'done':
+        currentBotMessageIdRef.current = null;
+        break;
 
-    websocket.onerror = error => {
-      console.error('WebSocket 错误:', error);
-    };
+      case 'error':
+        currentBotMessageIdRef.current = null;
+        setMessages(prev => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            content: `错误: ${data.message}`,
+            isUser: false,
+            timestamp: new Date(),
+          },
+        ]);
+        break;
+    }
+  };
 
-    return () => {
-      websocket.close();
-    };
-  }, []);
+  const { isConnected, isTyping, sendMessage: sendWebSocketMessage, isLoading, setIsLoading } = useWebSocket({
+    url: 'ws://localhost:3000/ws',
+    onMessage: handleWebSocketMessage,
+  });
 
   const sendMessage = () => {
-    if (!inputValue.trim() || isLoading || !ws || ws.readyState !== WebSocket.OPEN) return;
+    if (!inputValue.trim() || isLoading || !isConnected) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -140,12 +108,7 @@ export default function Chat() {
     setInputValue('');
     setIsLoading(true);
 
-    ws.send(
-      JSON.stringify({
-        type: 'ask',
-        question: userMessage.content,
-      })
-    );
+    sendWebSocketMessage(userMessage.content);
   };
 
   const handlePressEnter = (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
@@ -309,7 +272,7 @@ export default function Chat() {
             type="primary"
             icon={<SendOutlined />}
             onClick={sendMessage}
-            disabled={!inputValue.trim() || isLoading}
+            disabled={!inputValue.trim() || isLoading || !isConnected}
           >
             {isLoading ? '发送中' : '发送'}
           </Button>
